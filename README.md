@@ -64,6 +64,10 @@ Cada linha representa um registro experimental. A chave técnica `(source_sha256
 
 O conjunto não contém abertura, clique, custo de campanha ou margem. O contrato em `metadata/contrato_analitico.md` define a métrica principal e as comparações antes da análise de resultados. SQL Server, Power Query e DAX usarão essas mesmas definições nas próximas etapas. O processamento local em batch atende ao volume atual e evita custo de computação em nuvem; a adaptação a volumes maiores será tratada separadamente.
 
+## Encerramento planejado
+
+Ao fim das análises, `src/finalizar_projeto.py` executará a conferência final de dados, métricas, documentos, Azure, GitHub e proteção de artefatos. O projeto somente receberá status `approved` quando as evidências obrigatórias estiverem presentes e coerentes. Os critérios e limites estão em `docs/plano_finalizacao.md`. O finalizador será implementado e testado antes do encerramento; sua ausência hoje não representa uma validação concluída.
+
 Fonte do experimento: https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html
 
 O arquivo recebido é identificado por SHA-256 no manifesto. A linha da fonte não é uma identidade de cliente; `source_row_number` identifica somente a posição do registro dentro desta versão do arquivo.
