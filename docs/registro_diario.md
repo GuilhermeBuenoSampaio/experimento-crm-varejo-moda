@@ -3,7 +3,7 @@
 | Data | Início | Fim | Pausas (min) | Horas efetivas | Horas previstas | Diferença | Entrega validada | Bloqueios e decisões | Próximo passo |
 |---|---|---|---:|---:|---:|---:|---|---|---|
 | 2026-09-23 | 20:26 | 22:25 | Não registradas | 1h59* | 3h | -1h01* | Perfil da fonte, Bronze e Silver aprovadas; documentação gerada; publicação Azure informada como concluída | Azure CLI instalado; login Entra ID e permissão de dados ajustados; chamada do `az.cmd` corrigida no script Python. Não deduplicar registros idênticos sem ID de cliente. | Confirmar recibo `publicacao_azure.json` com 12 arquivos aprovados; iniciar EDA da Silver. |
-| 2026-09-24 |  |  |  |  | 3 |  |  |  |  |
+| 2026-09-24 | 19:30:16 (marco de controle) | Em andamento | A registrar | Em andamento | 3h | A calcular | Script de EDA atualizado com conferência de domínios e grafias; execução local pendente | O horário do início real da sessão não foi anotado; tempo anterior a 19:30:16 permanece não cronometrado. | Conferir recibo Azure, executar validação da EDA e revisar relatório. |
 | 2026-09-25 |  |  |  |  | 3 |  |  |  |  |
 | 2026-09-26 |  |  |  |  | 8 |  |  |  |  |
 | 2026-09-27 |  |  |  |  | 8 |  |  |  |  |
