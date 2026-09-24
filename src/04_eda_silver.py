@@ -26,6 +26,16 @@ NUMERIC = ("meses_desde_ultima_compra", "gasto_12_meses_usd")
 BINARY = ("comprou_masculino_12_meses", "comprou_feminino_12_meses", "cliente_novo_12_meses")
 CATEGORICAL = ("faixa_gasto_12_meses_usd", "zona_localizacao", "canal_compra_historico")
 OUTCOMES = ("visitou_site_14_dias", "comprou_14_dias", "gasto_14_dias_usd")
+ALLOWED_CATEGORIES = {
+    "grupo_experimental": {"E-mail masculino", "E-mail feminino", "Sem e-mail"},
+    "zona_localizacao": {"Rural", "Suburbana", "Urbana"},
+    "canal_compra_historico": {"Telefone", "Internet", "Multicanal"},
+    "faixa_gasto_12_meses_usd": {
+        "1) US$ 0 - 100", "2) US$ 100 - 200", "3) US$ 200 - 350",
+        "4) US$ 350 - 500", "5) US$ 500 - 750", "6) US$ 750 - 1.000",
+        "7) US$ 1.000 ou mais",
+    },
+}
 
 
 def digest(path: Path) -> str:
@@ -75,6 +85,15 @@ def markdown(result: dict) -> str:
     ]
     for group, n in result["groups"].items():
         lines.append(f"| {group} | {n:,} | {n / result['records']:.2%} |")
+    lines += ["", "## Domínios e grafias", "",
+              "Os valores observados foram comparados com as categorias do dicionário de tradução. "
+              "Categorias ausentes são informativas; valores inesperados bloqueiam a validação.", "",
+              "| Coluna | Distintos | Valores observados e contagens | Categorias esperadas ausentes |",
+              "|---|---:|---|---|"]
+    for name, detail in result["category_checks"].items():
+        observed = "; ".join(f"`{value}`: {count:,}" for value, count in detail["observed"].items())
+        missing = ", ".join(f"`{value}`" for value in detail["expected_not_observed"]) or "Nenhuma"
+        lines.append(f"| {name} | {len(detail['observed'])} | {observed} | {missing} |")
     lines += ["", "## Distribuições gerais", "", "| Variável | Mínimo | Q1 | Mediana | Média | Q3 | P95 | P99 | Máximo | Zeros |",
               "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for name, stats in result["numeric_distributions"].items():
@@ -116,7 +135,8 @@ def main() -> None:
     if digest(parquet) != audit["parquet_sha256"]:
         raise ValueError("Hash do Parquet diferente da auditoria Silver")
     contract = ROOT / "metadata/contrato_analitico.md"
-    if not contract.is_file():
+    dictionary = ROOT / "metadata/dicionario_traducao.md"
+    if not contract.is_file() or not dictionary.is_file():
         raise FileNotFoundError("Contrato analítico ausente")
     try:
         import pyarrow.parquet as pq
@@ -136,6 +156,18 @@ def main() -> None:
         raise ValueError("Indicador binário fora de 0/1")
     if any(row[name] < 0 for row in rows for name in ("gasto_12_meses_usd", "gasto_14_dias_usd")):
         raise ValueError("Gasto negativo na Silver")
+    if any(not 1 <= row["meses_desde_ultima_compra"] <= 12 for row in rows):
+        raise ValueError("Recência fora do intervalo de 1 a 12 meses")
+    category_checks = {}
+    for name, allowed in ALLOWED_CATEGORIES.items():
+        observed = dict(sorted(Counter(row[name] for row in rows).items()))
+        unexpected = sorted(set(observed) - allowed)
+        category_checks[name] = {
+            "expected": sorted(allowed), "observed": observed,
+            "unexpected": unexpected, "expected_not_observed": sorted(allowed - set(observed)),
+        }
+        if unexpected:
+            raise ValueError(f"Categoria ou grafia inesperada em {name}: {unexpected!r}")
     keys = {(row["hash_arquivo_fonte"], row["numero_linha_fonte"]) for row in rows}
     if len(keys) != len(rows) or any(row["hash_arquivo_fonte"] != audit["source_sha256"] for row in rows):
         raise ValueError("Chaves técnicas ou hash da fonte divergentes")
@@ -159,6 +191,7 @@ def main() -> None:
         "technical_validation": "approved", "analytic_review": "pending", "records": len(rows), "unique_keys": len(keys),
         "parquet_relative_path": audit["parquet_relative_path"],
         "parquet_sha256": audit["parquet_sha256"], "contract_sha256": digest(contract),
+        "translation_dictionary_sha256": digest(dictionary), "category_checks": category_checks,
         "groups": groups, "nulls": nulls, "numeric_distributions": numeric,
         "categorical_distributions_by_group": categories,
         "baseline_smd": baseline_smd,
@@ -170,7 +203,9 @@ def main() -> None:
     }
     if not args.execute:
         print(json.dumps({"mode": "validate_only", "technical_validation": result["technical_validation"], "records": result["records"],
-                          "groups": groups, "nulls": nulls}, indent=2, ensure_ascii=False))
+                          "groups": groups, "nulls": nulls,
+                          "unexpected_categories": {name: item["unexpected"] for name, item in category_checks.items()}},
+                         indent=2, ensure_ascii=False))
         return
     report_dir = ROOT / "docs/execucoes" / args.eda_run_id
     quality_dir = ROOT / "quality/runs" / args.eda_run_id
