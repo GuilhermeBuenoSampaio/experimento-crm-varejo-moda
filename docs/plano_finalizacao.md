@@ -1,6 +1,6 @@
 # Plano da etapa final — `src/finalizar_projeto.py`
 
-**Estado:** planejada. Executar após EDA, Gold, indicadores, A/B, SQL Server, Power BI e relatórios aprovados. Esta etapa faz parte do prazo do projeto; registrar seu tempo no diário.
+**Estado:** executada em 26/09/2026 como `FINAL01`. Conferências locais, dados, recibos, Azure, SQL e Git local aprovadas. Após a execução, o responsável tornou o repositório público; a visibilidade pública foi verificada separadamente pela API do GitHub às 19:17 (America/Sao_Paulo). O resultado histórico `github_visibilidade: not_verified` no recibo `FINAL01` permanece correto para o escopo do executor, que não consulta a API do GitHub. Ver `docs/registro_diario.md` e recibo local fora do Git.
 
 ## Objetivo e comportamento
 
@@ -34,4 +34,4 @@ O escaneamento de padrões não prova ausência absoluta de segredos. A visibili
 4. Exigir reconciliação remota após eventual publicação final; somente então registrar `approved`.
 5. Qualquer critério obrigatório não verificado impede declarar o projeto concluído. A revisão humana aprova a interpretação de negócio e a publicação do resumo executivo.
 
-**Implementação futura:** definir a lista de arquivos e consultas exatas quando Gold, SQL Server, Power BI e relatórios existirem. O script Python não está criado nesta fase para evitar validações fictícias sobre entregas ainda ausentes.
+**Implementação:** `src/finalizar_projeto.py`. A auditoria não executa SQL ao vivo, não baixa novamente os blobs Azure para recalcular SHA-256 e não consulta a API autenticada do GitHub. Essas limitações permanecem explícitas no recibo. O encerramento do recorte foi decidido pela suficiência da análise e dos artefatos, sem novas análises planejadas.

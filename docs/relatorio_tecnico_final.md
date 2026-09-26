@@ -46,7 +46,7 @@ Não há identificador de pessoa, abertura, clique, custo de envio, margem nem d
 
 ## Registro de tempo
 
-O primeiro registro visual disponível desta sessão em 26/09/2026 tem carimbo de arquivo **17:16:22** (America/Sao_Paulo). Ele é um marco aproximado da retomada, não a hora exata de envio da primeira mensagem. O horário final deve ser preenchido quando a sessão terminar; pausas de hoje não foram informadas. Ver `docs/registro_diario.md`.
+O primeiro registro visual disponível desta sessão em 26/09/2026 tem carimbo de arquivo **17:16:22** (America/Sao_Paulo). Ele é um marco aproximado da retomada, não a hora exata de envio da primeira mensagem. Às **19:13** o responsável confirmou a visibilidade privada; às **19:17** confirmou a alteração para público, verificada separadamente pela API do GitHub. O intervalo entre o primeiro marco visual e a confirmação pública foi de aproximadamente **2h00min38s**. Pausas de hoje não foram informadas; horas efetivas não foram apuradas. O recibo `FINAL01` não testa a visibilidade e conserva `not_verified` nesse item. Ver `docs/registro_diario.md`.
 
 ## Referências internas
 

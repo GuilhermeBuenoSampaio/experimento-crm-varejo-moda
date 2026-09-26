@@ -1,6 +1,10 @@
 # Experimento de CRM em Varejo de Moda
 
-Estudo independente do experimento público de Kevin Hillstrom (MineThatData) para comparar dois e-mails com o grupo de controle sem e-mail. Projeto de portfólio em desenvolvimento; as conclusões A/B serão publicadas após análise exploratória, definição e validação dos indicadores e testes de hipótese.
+Estudo independente do experimento público de Kevin Hillstrom (MineThatData) para comparar dois e-mails com o grupo de controle sem e-mail. O recorte analítico foi concluído em 26/09/2026: 64.000 registros, 9.394 visitas, 578 compras e USD 67.258,13 de vendas observadas. Os e-mails feminino e masculino tiveram taxas de compra de 0,88% e 1,25%, frente a 0,57% do controle; ambos os contrastes com o controle passaram no ajuste de Bonferroni. Não foi realizado teste direto entre os e-mails.
+
+Relatórios finais: `docs/relatorio_tecnico_final.md` e `.docx`; `docs/relatorio_executivo_final.md` e `.docx`. O painel está em `power_bi/experimento_crm_varejo_moda.pbix`, com captura em `docs/visao_executiva_power_bi.png`. O repositório foi tornado público em 26/09/2026; a visibilidade foi conferida separadamente pela API do GitHub.
+
+**Adendo de escopo:** o projeto termina com as entregas atuais por suficiência para a pergunta e para o objetivo de portfólio. Não há expansão de segmentação ou modelos nesta versão. Vendas não são lucro; faltam custo, margem e ID individual.
 
 O CSV original permanece em inglês na Landing e na Bronze. O projeto usa português na documentação e aplicará os nomes e categorias aprovados em `metadata/dicionario_traducao.md` somente na Silver, mantendo os valores originais rastreáveis. Valores monetários permanecem em USD; não há conversão para reais.
 
@@ -64,9 +68,9 @@ Cada linha representa um registro experimental. A chave técnica `(source_sha256
 
 O conjunto não contém abertura, clique, custo de campanha ou margem. O contrato em `metadata/contrato_analitico.md` define a métrica principal e as comparações antes da análise de resultados. SQL Server, Power Query e DAX usarão essas mesmas definições nas próximas etapas. O processamento local em batch atende ao volume atual e evita custo de computação em nuvem; a adaptação a volumes maiores será tratada separadamente.
 
-## Encerramento planejado
+## Conferência final
 
-Ao fim das análises, `src/finalizar_projeto.py` executará a conferência final de dados, métricas, documentos, Azure, GitHub e proteção de artefatos. O projeto somente receberá status `approved` quando as evidências obrigatórias estiverem presentes e coerentes. Os critérios e limites estão em `docs/plano_finalizacao.md`. O finalizador será implementado e testado antes do encerramento; sua ausência hoje não representa uma validação concluída.
+`src/finalizar_projeto.py` verifica arquivos finais, hashes e totais das camadas, recibos Azure e SQL, além do inventário Git. O modo padrão é somente leitura; `--execute --run-id FINAL01` grava um recibo local fora do Git. Antes da execução final, rode `git fetch origin`. A visibilidade do GitHub e o SQL ao vivo não são conferidos automaticamente. Qualquer evidência indisponível é sinalizada como bloqueio; a decisão de encerrar o recorte analítico não substitui a auditoria técnica.
 
 Fonte do experimento: https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html
 
