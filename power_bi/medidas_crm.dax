@@ -1,0 +1,70 @@
+// Experimento CRM Varejo Moda — contrato analítico v1.0
+// Copiar UMA medida por vez em Modelagem > Nova medida no Power BI Desktop.
+// Tabelas importadas: 'crm fato_resposta_experimental' e 'crm dim_grupo_experimental'.
+// Grão da fato: registro experimental; não interpretar como cliente identificado.
+// Formatos: taxas e uplift = porcentagem com 2 casas; diferença = número decimal
+// com 2 casas (já multiplicado por 100: pontos percentuais); gastos = USD.
+
+Contagem registros Gold =
+COUNTROWS('crm fato_resposta_experimental')
+
+Visitas validadas =
+SUM('crm fato_resposta_experimental'[visitou_site_14_dias])
+
+Compras validadas =
+SUM('crm fato_resposta_experimental'[comprou_14_dias])
+
+Taxa de visita validada =
+DIVIDE(
+    SUM('crm fato_resposta_experimental'[visitou_site_14_dias]),
+    COUNTROWS('crm fato_resposta_experimental')
+)
+
+Taxa de conversão validada =
+DIVIDE(
+    SUM('crm fato_resposta_experimental'[comprou_14_dias]),
+    COUNTROWS('crm fato_resposta_experimental')
+)
+
+Gasto total USD validado =
+SUM('crm fato_resposta_experimental'[gasto_14_dias_usd])
+
+Gasto por registro USD validado =
+DIVIDE(
+    SUM('crm fato_resposta_experimental'[gasto_14_dias_usd]),
+    COUNTROWS('crm fato_resposta_experimental')
+)
+
+Taxa de conversão controle =
+CALCULATE(
+    [Taxa de conversão validada],
+    REMOVEFILTERS('crm dim_grupo_experimental'),
+    'crm dim_grupo_experimental'[grupo_experimental] = "Sem e-mail"
+)
+
+Uplift de conversão =
+VAR Grupo = SELECTEDVALUE('crm dim_grupo_experimental'[grupo_experimental])
+RETURN
+IF(
+    ISBLANK(Grupo) || Grupo = "Sem e-mail",
+    BLANK(),
+    DIVIDE(
+        [Taxa de conversão validada] - [Taxa de conversão controle],
+        [Taxa de conversão controle]
+    )
+)
+
+Diferença de conversão pp =
+VAR Grupo = SELECTEDVALUE('crm dim_grupo_experimental'[grupo_experimental])
+RETURN
+IF(
+    ISBLANK(Grupo) || Grupo = "Sem e-mail",
+    BLANK(),
+    100 * (
+        [Taxa de conversão validada] - [Taxa de conversão controle]
+    )
+)
+
+// As duas últimas medidas ficam vazias no controle e na linha Total.
+// Intervalos de confiança e p-valores vêm da análise Python AB01; não são
+// calculados pelas medidas descritivas DAX. Não há custo, margem ou abertura.
